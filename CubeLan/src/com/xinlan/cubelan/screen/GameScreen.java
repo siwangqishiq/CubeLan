@@ -35,7 +35,7 @@ public class GameScreen extends CubeLanScreen
         cam = new OrthographicCamera(Config.SCREEN_WIDTH, Config.SCREEN_HEIGHT);
         cam.position.set(Config.SCREEN_WIDTH / 2, Config.SCREEN_HEIGHT / 2, 0);
         
-        coreData = new CoreData();
+        coreData = new CoreData(this);
     }
 
     @Override
