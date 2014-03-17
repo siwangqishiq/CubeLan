@@ -17,11 +17,8 @@ public class CoreData implements InputProcessor
 {
     public static final int RED = 1;
     public static final int GREEN = 2;
-    public static final int YELLOW = 3;
+    public static final int PINK = 3;
     public static final int BLACK = 4;
-    public static final int BLUE = 5;
-    public static final int PINK = 6;
-    public static final int GRAY = 7;
 
     public static final int PAD = 15;
     public static final int TOP = 200;
@@ -37,10 +34,22 @@ public class CoreData implements InputProcessor
     private Random rand = new Random();
     private float times;
 
+    // public byte[][] data = {//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 }, //
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 },//
+    // { 0, 0, 0, 0, 0, 0, 0 } };
+
     public byte[][] data = {//
-    { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 },//
+    { 1, 1, 1, 1, 1, 1, 1 },//
+            { 0, 0, 0, 0, 1, 1, 0 },//
+            { 0, 0, 0, 0, 2, 0, 0 },//
             { 0, 0, 0, 0, 0, 0, 0 },//
             { 0, 0, 0, 0, 0, 0, 0 }, //
             { 0, 0, 0, 0, 0, 0, 0 },//
@@ -56,9 +65,11 @@ public class CoreData implements InputProcessor
     private LinkedList<Point> track = new LinkedList<Point>();
     private Vector3 touchPos = new Vector3();
     protected byte nextCubeValue;
-    private int dy = 10;
+    private int dy = 13;
     private float addCubeX, addCubeY;
     private int curCol;
+    private LinkedList<Integer> dismissList = new LinkedList<Integer>();
+    private HashSet<Integer> hashSet = new HashSet<Integer>();
 
     public static class Point
     {
@@ -71,18 +82,18 @@ public class CoreData implements InputProcessor
         state = WAIT_SHOT;
         Gdx.input.setInputProcessor(this);
         nextCubeValue = genNormalValue();
-       genRow();
-//        genRow();
+        // genRow();
+        // genRow();
     }
 
     public void logic(float delta)
     {
         times += delta;
-        // if (times >= 2)
-        // {
-        // times = 0;
-        // genRow();
-        // }
+        if (times >= 10)
+        {
+            times = 0;
+            genRow();
+        }
 
         switch (state)
         {
@@ -112,10 +123,20 @@ public class CoreData implements InputProcessor
                         if (pos == 0 && data[0][curCol] == 0)
                         {
                             data[0][curCol] = nextCubeValue;
+                            checkData(0, curCol);
                         }
                         else
                         {
                             data[pos + 1][curCol] = nextCubeValue;
+                            checkData(pos + 1, curCol);
+                        }
+
+                        if (dismissList.size() >= 6)
+                        {
+                            for (int i = 0; i < dismissList.size(); i += 2)
+                            {
+                                data[dismissList.get(i)][dismissList.get(i + 1)] = 0;
+                            }// end for i
                         }
                     }
                     state = WAIT_SHOT;
@@ -123,6 +144,7 @@ public class CoreData implements InputProcessor
                 }
                 break;
         }// end switch
+        moveCubes();
     }
 
     private int findCubeToPos()
@@ -137,8 +159,9 @@ public class CoreData implements InputProcessor
             }
         }// end for i
         int marginNum = pos - 1 < 0 ? 0 : pos;
-        if (pos == 0 && data[0][curCol] == 0){
-            return Config.SCREEN_HEIGHT-TOP;
+        if (pos == 0 && data[0][curCol] == 0)
+        {
+            return Config.SCREEN_HEIGHT - TOP;
         }
         return Config.SCREEN_HEIGHT
                 - (TOP + CUBE * pos + marginNum * MARGIN + CUBE);
@@ -182,16 +205,10 @@ public class CoreData implements InputProcessor
                 return Color.RED;
             case GREEN:
                 return Color.GREEN;
-            case YELLOW:
-                return Color.YELLOW;
-            case BLACK:
-                return Color.BLACK;
-            case BLUE:
-                return Color.BLUE;
             case PINK:
                 return Color.PINK;
-            case GRAY:
-                return Color.GRAY;
+            case BLACK:
+                return Color.BLACK;
         }// end switch
         return Color.WHITE;
     }
@@ -203,7 +220,7 @@ public class CoreData implements InputProcessor
      */
     public byte genNormalValue()
     {
-        return (byte) (1 + rand.nextInt(GRAY));
+        return (byte) (1 + rand.nextInt(BLACK));
     }
 
     /**
@@ -222,23 +239,103 @@ public class CoreData implements InputProcessor
         System.arraycopy(rowTemp, 0, data[0], 0, length);
     }
 
-    public LinkedList<Point> calPath(int startx, int starty)
+    private void checkData(int x, int y)
     {
-        return null;
+        dismissList.clear();
+        hashSet.clear();
+        calPath(x, y);
     }
 
-    private void show()
+    private void moveCubes()
     {
-        System.out.println("***************************************");
-        for (int i = 0; i < data.length; i++)
+        for (int i = 0; i < data[0].length; i++)
         {
-            for (int j = 0; j < data[0].length; j++)
+            for (int j = 0; j < data.length; j++)
             {
-                System.out.print(data[i][j] + "    ");
+                if (data[j][i] == 0)
+                {
+                    continue;
+                }
+
+                if (j > 0)
+                {
+                    int index = j;
+                    while (data[index - 1][i] == 0)
+                    {
+                        data[index - 1][i] = data[index][i];
+                        data[index][i] = 0;
+                        index++;
+                        if (index >= data.length)
+                            break;
+                    }// end while
+                }
             }// end for j
-            System.out.println();
         }// end for i
     }
+
+    private void calPath(int startx, int starty)
+    {
+        int key = 7 * startx + starty;
+        if (hashSet.contains(key))
+        {
+            return;
+        }
+        else
+        {
+            hashSet.add(key);
+            dismissList.add(startx);
+            dismissList.add(starty);
+            int value = data[startx][starty];
+            if (value == 0)
+                return;
+
+            if (starty - 1 >= 0)
+            {
+                if (value == data[startx][starty - 1])
+                {
+                    calPath(startx, starty - 1);
+                }
+            }
+
+            if (startx - 1 >= 0)
+            {// ио╠ъ
+                if (value == data[startx - 1][starty])
+                {
+                    calPath(startx - 1, starty);
+                }
+            }
+
+            if (starty + 1 < data[0].length)// ср
+            {
+                if (value == data[startx][starty + 1])
+                {
+                    calPath(startx, starty + 1);
+                }
+            }
+
+            if (startx + 1 < data.length)// об
+            {
+                if (value == data[startx + 1][starty])
+                {
+                    calPath(startx + 1, starty);
+                }
+            }
+
+        }
+    }
+
+    // private void show()
+    // {
+    // System.out.println("***************************************");
+    // for (int i = 0; i < data.length; i++)
+    // {
+    // for (int j = 0; j < data[0].length; j++)
+    // {
+    // System.out.print(data[i][j] + "    ");
+    // }// end for j
+    // System.out.println();
+    // }// end for i
+    // }
 
     @Override
     public boolean keyDown(int keycode)
