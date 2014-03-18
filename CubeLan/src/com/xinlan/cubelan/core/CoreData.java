@@ -20,10 +20,10 @@ public class CoreData implements InputProcessor
     public static final int PINK = 3;
     public static final int BLACK = 4;
 
-    public static final int PAD = 15;
+    public static final int PAD = 20;
     public static final int TOP = 200;
-    public static final int CUBE = 60;
-    public static final int MARGIN = 5;
+    public static final int CUBE = 70;
+    public static final int MARGIN = 4;
 
     public static final int WAIT_SHOT = 2;
     public static final int SHOT = 3;
@@ -34,29 +34,17 @@ public class CoreData implements InputProcessor
     private Random rand = new Random();
     private float times;
 
-    // public byte[][] data = {//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 }, //
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 },//
-    // { 0, 0, 0, 0, 0, 0, 0 } };
-
     public byte[][] data = {//
-    { 1, 1, 1, 1, 1, 1, 1 },//
-            { 0, 0, 0, 0, 1, 1, 0 },//
-            { 0, 0, 0, 0, 2, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 }, //
-            { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 },//
-            { 0, 0, 0, 0, 0, 0, 0 } };
+    { 0, 0, 0, 0, 0,0 },//
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 }, //
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 },//
+            { 0, 0, 0, 0, 0, 0 } };
 
     private byte[] rowTemp = new byte[data[0].length];
     private int length = rowTemp.length;
@@ -65,7 +53,7 @@ public class CoreData implements InputProcessor
     private LinkedList<Point> track = new LinkedList<Point>();
     private Vector3 touchPos = new Vector3();
     protected byte nextCubeValue;
-    private int dy = 13;
+    private int dy = 14;
     private float addCubeX, addCubeY;
     private int curCol;
     private LinkedList<Integer> dismissList = new LinkedList<Integer>();
@@ -82,14 +70,12 @@ public class CoreData implements InputProcessor
         state = WAIT_SHOT;
         Gdx.input.setInputProcessor(this);
         nextCubeValue = genNormalValue();
-        // genRow();
-        // genRow();
     }
 
     public void logic(float delta)
     {
         times += delta;
-        if (times >= 10)
+        if (times >= 5)
         {
             times = 0;
             genRow();
@@ -324,19 +310,6 @@ public class CoreData implements InputProcessor
         }
     }
 
-    // private void show()
-    // {
-    // System.out.println("***************************************");
-    // for (int i = 0; i < data.length; i++)
-    // {
-    // for (int j = 0; j < data[0].length; j++)
-    // {
-    // System.out.print(data[i][j] + "    ");
-    // }// end for j
-    // System.out.println();
-    // }// end for i
-    // }
-
     @Override
     public boolean keyDown(int keycode)
     {
@@ -435,16 +408,10 @@ public class CoreData implements InputProcessor
                     addCubeX = PAD + 4 * (CUBE + MARGIN);
                     curCol = 4;
                 }
-                else if (x >= PAD + 5 * (CUBE + MARGIN)
-                        && x < PAD + 6 * CUBE + 6 * MARGIN)
+                else if (x >= PAD + 5 * (CUBE + MARGIN))
                 {
                     addCubeX = PAD + 5 * (CUBE + MARGIN);
                     curCol = 5;
-                }
-                else if (x >= PAD + 6 * (CUBE + MARGIN))
-                {
-                    addCubeX = PAD + 6 * (CUBE + MARGIN);
-                    curCol = 6;
                 }
 
                 state = MOVE;
