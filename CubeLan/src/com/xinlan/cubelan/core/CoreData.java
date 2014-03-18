@@ -122,6 +122,7 @@ public class CoreData implements InputProcessor
                             for (int i = 0; i < dismissList.size(); i += 2)
                             {
                                 data[dismissList.get(i)][dismissList.get(i + 1)] = 0;
+                                this.screen.score+=2;
                             }// end for i
                         }
                     }
@@ -261,7 +262,7 @@ public class CoreData implements InputProcessor
 
     private void calPath(int startx, int starty)
     {
-        int key = 7 * startx + starty;
+        int key = 6 * startx + starty;
         if (hashSet.contains(key))
         {
             return;
@@ -415,6 +416,8 @@ public class CoreData implements InputProcessor
                 }
 
                 state = MOVE;
+                
+                this.screen.score++;
                 break;
         }// end switch
         return true;
