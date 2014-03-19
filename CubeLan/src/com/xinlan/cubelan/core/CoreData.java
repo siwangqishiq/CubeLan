@@ -56,7 +56,7 @@ public class CoreData implements InputProcessor
     private int dy = 14;
     private float addCubeX, addCubeY;
     private int curCol;
-    private LinkedList<Integer> dismissList = new LinkedList<Integer>();
+    public LinkedList<Integer> dismissList = new LinkedList<Integer>();
     private HashSet<Integer> hashSet = new HashSet<Integer>();
 
     public static class Point
@@ -75,11 +75,13 @@ public class CoreData implements InputProcessor
     public void logic(float delta)
     {
         times += delta;
-        if (times >= 5)
+        if (times >= 10)
         {
             times = 0;
             genRow();
         }
+        
+        //this.screen.score++;
 
         switch (state)
         {
