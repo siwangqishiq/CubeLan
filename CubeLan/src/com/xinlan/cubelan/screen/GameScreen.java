@@ -107,7 +107,6 @@ public class GameScreen extends CubeLanScreen
                 particleList.remove(i);
             }
         } // end for i
-
     }
 
     @Override

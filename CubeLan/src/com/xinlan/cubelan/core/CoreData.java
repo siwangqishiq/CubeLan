@@ -70,6 +70,7 @@ public class CoreData implements InputProcessor
         state = WAIT_SHOT;
         Gdx.input.setInputProcessor(this);
         nextCubeValue = genNormalValue();
+        genRow();
     }
 
     public void logic(float delta)
@@ -418,8 +419,6 @@ public class CoreData implements InputProcessor
                 }
 
                 state = MOVE;
-                
-                this.screen.score++;
                 break;
         }// end switch
         return true;
